@@ -1,0 +1,791 @@
+﻿<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-font-size="medium">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyMate AI — 개인 맞춤형 학습 코치</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       APP HEADER
+       ========================================================================== -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-logo" onclick="navigateTo('home')">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+          </svg>
+        </div>
+        <span>StudyMate AI</span>
+        <span class="brand-badge">2.0</span>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav">
+        <button class="nav-btn active" data-page="home" onclick="navigateTo('home')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          홈
+        </button>
+        <button class="nav-btn" data-page="diagnosis" onclick="navigateTo('diagnosis')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          학습 진단
+        </button>
+        <button class="nav-btn" data-page="report" onclick="navigateTo('report')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          AI 분석 결과
+        </button>
+        <button class="nav-btn" data-page="coach" onclick="navigateTo('coach')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+          AI 상담
+        </button>
+        <button class="nav-btn" data-page="mystudy" onclick="navigateTo('mystudy')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+          나의 학습 공간
+        </button>
+      </nav>
+
+      <!-- Action Controls -->
+      <div class="header-actions">
+        <button class="icon-btn" id="theme-toggle-btn" title="다크 모드 전환" onclick="toggleTheme()">
+          <svg id="theme-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" title="설정 (글자크기, AI스타일, API)" onclick="openSettingsModal()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN CONTENT CONTAINER (5 VIEWS)
+       ========================================================================== -->
+  <main class="app-main">
+
+    <!-- 1. HOME VIEW -->
+    <section id="page-home" class="page-view active">
+      <!-- Returning User Banner (Dynamic) -->
+      <div id="returning-user-box" class="returning-user-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+          <h3 style="color:var(--primary); font-size:1.15rem; font-weight:700;">👋 돌아오신 것을 환영해요!</h3>
+          <span class="badge badge-mint" id="returning-meta-info">진단 이력 있음</span>
+        </div>
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:1rem;" id="returning-user-desc">
+          기존에 분석된 맞춤형 학습 계획이 저장되어 있습니다. 이어서 공부하거나 새로운 진단을 시작해보세요.
+        </p>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="navigateTo('mystudy')">📝 오늘의 학습 계획 계속하기</button>
+          <button class="btn btn-secondary btn-sm" onclick="navigateTo('report')">📊 최근 분석 결과 보기</button>
+          <button class="btn btn-outline btn-sm" onclick="startFreshDiagnosis()">✨ 새 학습 진단 시작</button>
+        </div>
+      </div>
+
+      <!-- Hero Section -->
+      <div class="hero-banner">
+        <div class="hero-badge">
+          <span>🍀 UN SDG 4 — 양질의 교육을 위한 스마트 AI 맞춤형 코칭</span>
+        </div>
+        <h1 class="hero-title">
+          나만의 학습 방향을 찾고,<br>
+          <span>AI와 함께 실질적인 성적 향상</span>을 이뤄보세요
+        </h1>
+        <p class="hero-desc">
+          수준 진단부터 구체적인 취약점 분석, 실천 가능한 공부법과 분 단위 시간표까지.<br>
+          대한민국 중·고·대학생 및 모든 시험 수험생을 위한 1:1 맞춤형 AI 전담 코치입니다.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="navigateTo('diagnosis')">
+            🚀 나의 학습 전략 알아보기 (무료 진단)
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="openSettingsModal()">
+            ⚙️ 환경 설정 및 AI 스타일
+          </button>
+        </div>
+      </div>
+
+      <!-- Feature Cards Grid -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-box">🎯</div>
+          <h3>정밀한 수준 및 목표 분석</h3>
+          <p>현재 성적과 목표의 차이를 면밀히 분석하고, 시험 D-Day에 맞춘 단계별 학습 로드맵을 제안합니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-box">💡</div>
+          <h3>이유가 명확한 공부법 TOP 3</h3>
+          <p>무엇을, 왜, 어떻게 해야 하는지 과학적 인출 학습과 오답 극복법을 추천 근거와 함께 제공합니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-box">⏱️</div>
+          <h3>현실적인 분 단위 시간표</h3>
+          <p>오늘 공부 가능한 시간(0.5~10시간) 내에서 휴식과 순수 학습 시간을 오차 없이 체계적으로 배분합니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-box">💬</div>
+          <h3>심층 상담 & 학습 계획 수정</h3>
+          <p>추천 이유나 어려운 개념을 1:1로 질문하고, 대화를 통해 시간표를 내 입맛에 맞게 즉시 수정합니다.</p>
+        </div>
+      </div>
+
+      <!-- SDG 4 Banner -->
+      <div class="sdg-section">
+        <div class="sdg-icon">
+          SDGs<br>#4
+        </div>
+        <div>
+          <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.25rem;">UN 지속가능발전목표(SDGs) 4번 : 모두를 위한 양질의 교육</h4>
+          <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+            StudyMate AI는 교육 기회의 불평등을 해소하고, 사교육 없이도 누구나 체계적이고 자기주도적인 학습 전략을 갖출 수 있도록 실질적인 학습 길잡이를 무료로 제공합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. DIAGNOSIS VIEW (INPUT FORM) -->
+    <section id="page-diagnosis" class="page-view">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📝</span> 학습 정보 입력 & 상태 진단
+          </div>
+          <span class="badge badge-primary">간편 진단 (약 1분 소요)</span>
+        </div>
+
+        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+          현재 학생분의 상황을 솔직하게 입력해 주세요. <strong>[필수]</strong> 항목만 입력하셔도 바로 분석되며, <strong>[선택]</strong> 항목을 추가하시면 더욱 정밀한 맞춤 전략이 제공됩니다.
+        </p>
+
+        <!-- Form Start -->
+        <form id="diagnosis-form" onsubmit="handleDiagnosisSubmit(event)" novalidate>
+
+          <!-- Group 1: Basic Info -->
+          <h3 class="diagnosis-section-title">
+            <span>1. 기본 학습 정보</span>
+          </h3>
+          <div class="diagnosis-section-subtitle">대상자 유형과 과목, 목표를 정합니다.</div>
+
+          <div class="form-group" id="grp-learner-type">
+            <label class="form-label">
+              학습자 유형 <span class="req-badge">필수</span>
+            </label>
+            <div class="chip-group" id="chip-learner-type">
+              <div class="chip selected" data-value="high" onclick="selectChip('learner-type', 'high')">고등학생 (내신/수능)</div>
+              <div class="chip" data-value="middle" onclick="selectChip('learner-type', 'middle')">중학생 (기초/내신)</div>
+              <div class="chip" data-value="univ" onclick="selectChip('learner-type', 'univ')">대학생 (학점/전공)</div>
+              <div class="chip" data-value="exam" onclick="selectChip('learner-type', 'exam')">기타 수험생 (자격증/공무원/어학)</div>
+            </div>
+            <div id="exam-detail-group" style="display:none; margin-top:0.75rem;">
+              <label class="form-label">준비하는 시험명 <span class="opt-badge">선택</span></label>
+              <input type="text" id="input-exam-name" class="form-control" placeholder="준비 중인 시험명을 입력하세요 (예: 토익, 정보처리기사, 공무원 등)">
+            </div>
+          </div>
+
+          <div class="form-group" id="grp-subject">
+            <label class="form-label" for="input-subject">
+              학습 과목 또는 시험명 <span class="req-badge">필수</span>
+              <span class="sub-text">(예: 고2 수학II 미분, 수능 영어 빈칸추론, 화학I, 전공 알고리즘, 토익 등)</span>
+            </label>
+            <input type="text" id="input-subject" class="form-control" placeholder="과목이나 학습 단원을 자유롭게 입력하세요" required>
+            <div class="field-error-msg" id="err-subject">⚠️ 학습 과목 또는 시험명을 입력해 주세요!</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+            <div class="form-group" id="grp-current-score">
+              <label class="form-label" for="input-current-score">
+                현재 성적 또는 학습 수준 <span class="opt-badge">선택</span>
+                <span class="sub-text">(점수, 등급, 학점 등)</span>
+              </label>
+              <input type="text" id="input-current-score" class="form-control" placeholder="예: 모의고사 4등급, 65점, B0, 기본기 부족 등">
+            </div>
+
+            <div class="form-group" id="grp-target-score">
+              <label class="form-label" for="input-target-score">
+                목표 성적 또는 학습 목표 <span class="req-badge">필수</span>
+                <span class="sub-text">(등급, 점수, 합격 목표 등)</span>
+              </label>
+              <input type="text" id="input-target-score" class="form-control" placeholder="예: 안정적 2등급, 90점 이상, A+, 1차 합격" required>
+              <div class="field-error-msg" id="err-target-score">⚠️ 목표 성적 또는 학습 목표를 입력해 주세요!</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+            <div class="form-group" id="grp-exam-date">
+              <label class="form-label" for="input-exam-date">
+                시험 예정일 / 마감일 <span class="opt-badge">선택</span>
+              </label>
+              <input type="date" id="input-exam-date" class="form-control">
+            </div>
+
+            <div class="form-group" id="grp-study-hours">
+              <label class="form-label">
+                하루 공부 가능 시간 <span class="req-badge">필수</span>
+              </label>
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span style="font-size:0.85rem; color:var(--text-muted);">0.5시간 ~ 10시간 (30분 단위)</span>
+                  <span class="slider-value-badge" id="slider-hours-label">4.0시간 (4시간 0분)</span>
+                </div>
+                <input type="range" id="input-study-hours" class="custom-range" min="0.5" max="10" step="0.5" value="4" oninput="updateHoursLabel(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <hr style="border:none; border-top:1px solid var(--border-color); margin: 1.5rem 0;">
+
+          <!-- Group 2: Pain points -->
+          <h3 class="diagnosis-section-title">
+            <span>2. 학습 고민 및 취약 영역</span>
+            <span class="opt-badge">선택</span>
+          </h3>
+          <div class="diagnosis-section-subtitle">현재 가장 겪고 있는 어려움을 복수 선택해 주세요 (생략 가능).</div>
+
+          <div class="form-group">
+            <div class="chip-group" id="chip-pain-points">
+              <div class="chip" data-value="concept" onclick="toggleMultiChip(this, 'pain')">📖 개념 이해 부족</div>
+              <div class="chip selected" data-value="problem" onclick="toggleMultiChip(this, 'pain')">📝 문제 풀이/응용 어려움</div>
+              <div class="chip" data-value="memorize" onclick="toggleMultiChip(this, 'pain')">🧠 암기/공식 기억 어려움</div>
+              <div class="chip" data-value="focus" onclick="toggleMultiChip(this, 'pain')">⚡ 집중력 유지 부족</div>
+              <div class="chip selected" data-value="time" onclick="toggleMultiChip(this, 'pain')">⏳ 시간 배분/관리 부족</div>
+              <div class="chip" data-value="method" onclick="toggleMultiChip(this, 'pain')">❓ 공부 방법을 모르겠음</div>
+              <div class="chip" data-value="etc" onclick="toggleMultiChip(this, 'pain', true)">✏️ 기타 학습 고민</div>
+            </div>
+            <div id="pain-etc-group" style="display:none; margin-top:0.75rem;">
+              <input type="text" id="input-pain-etc" class="form-control" placeholder="기타 학습 고민을 구체적으로 적어주세요">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="input-additional">
+              추가 학습 상황 / AI에게 알리고 싶은 점 <span class="opt-badge">선택</span>
+            </label>
+            <textarea id="input-additional" class="form-control" rows="2" placeholder="예: 평소 수학 기출문제를 풀 때 계산 실수가 잦고 킬러 문항에 진입하지 못합니다."></textarea>
+          </div>
+
+          <hr style="border:none; border-top:1px solid var(--border-color); margin: 1.5rem 0;">
+
+          <!-- Group 3: Condition & Meal -->
+          <h3 class="diagnosis-section-title">
+            <span>3. 당일 컨디션 및 식사 상태</span>
+            <span class="opt-badge">선택</span>
+          </h3>
+          <div class="diagnosis-section-subtitle">오늘의 컨디션에 맞춰 학습 강도와 휴식 주기를 유연하게 조정합니다 (선택 시 맞춤 반영).</div>
+
+          <div class="form-group">
+            <label class="form-label">오늘의 컨디션 <span class="opt-badge">선택</span></label>
+            <div class="condition-grid" id="condition-grid">
+              <div class="condition-item" data-value="none" onclick="selectCondition('none')">
+                <span class="condition-emoji">⚪</span>
+                <span class="condition-label">선택 안 함</span>
+              </div>
+              <div class="condition-item" data-value="very_bad" onclick="selectCondition('very_bad')">
+                <span class="condition-emoji">😫</span>
+                <span class="condition-label">매우 나쁨</span>
+              </div>
+              <div class="condition-item" data-value="bad" onclick="selectCondition('bad')">
+                <span class="condition-emoji">😞</span>
+                <span class="condition-label">나쁨</span>
+              </div>
+              <div class="condition-item selected" data-value="normal" onclick="selectCondition('normal')">
+                <span class="condition-emoji">😐</span>
+                <span class="condition-label">보통</span>
+              </div>
+              <div class="condition-item" data-value="good" onclick="selectCondition('good')">
+                <span class="condition-emoji">🙂</span>
+                <span class="condition-label">좋음</span>
+              </div>
+              <div class="condition-item" data-value="very_good" onclick="selectCondition('very_good')">
+                <span class="condition-emoji">😄</span>
+                <span class="condition-label">매우 좋음</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">현재 식사 상태 <span class="opt-badge">선택</span></label>
+            <div class="chip-group" id="chip-meal-status">
+              <div class="chip selected" data-value="done" onclick="selectChip('meal-status', 'done')">🍚 식사 완료 (든든함)</div>
+              <div class="chip" data-value="hungry" onclick="selectChip('meal-status', 'hungry')">🥖 배고픔 (출출함)</div>
+              <div class="chip" data-value="soon" onclick="selectChip('meal-status', 'soon')">⏰ 곧 식사 예정</div>
+              <div class="chip" data-value="etc" onclick="selectChip('meal-status', 'etc')">☕ 기타 / 간식</div>
+              <div class="chip" data-value="none" onclick="selectChip('meal-status', 'none')">⚪ 선택 안 함</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; display:flex; gap:0.75rem;">
+            <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-start-analysis">
+              🚀 AI 맞춤 학습 전략 분석 시작하기
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 3. AI ANALYSIS REPORT VIEW -->
+    <section id="page-report" class="page-view">
+      <!-- Report Header Banner -->
+      <div class="report-header-banner">
+        <div class="report-meta-bar">
+          <div>
+            <span class="badge badge-primary" id="rep-learner-badge">고등학생</span>
+            <span class="badge badge-mint" id="rep-subject-badge">수학II</span>
+            <span class="badge badge-demo" id="rep-mode-badge">⚡ 규칙 기반 맞춤형 학습 추천 시스템</span>
+          </div>
+          <div id="rep-date-label">분석 일시: 2026. 11. 21.</div>
+        </div>
+        <h2 style="font-size:1.45rem; font-weight:800; color:var(--text-main);" id="rep-main-heading">
+          맞춤형 학습 진단 & 성적 향상 종합 전략 리포트
+        </h2>
+        <p style="font-size:0.92rem; color:var(--text-muted);" id="rep-main-desc">
+          입력하신 데이터를 기반으로 최적화된 공부법과 실행 가능한 시간표를 도출했습니다.
+        </p>
+      </div>
+
+      <!-- Core Summary Card -->
+      <div class="card summary-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📌</span> 핵심 학습 방향 요약 (Core Summary)
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="copyFullReportSummary()">📋 요약 복사</button>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-item-label">현재 상태 vs 목표</div>
+            <div class="summary-item-val" id="sum-status-target">-</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-item-label">주요 취약 영역</div>
+            <div class="summary-item-val" id="sum-weakness">-</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-item-label">최우선 학습 과제</div>
+            <div class="summary-item-val" id="sum-priority">-</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-item-label">가장 추천하는 공부법</div>
+            <div class="summary-item-val" id="sum-method">-</div>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem; padding:0.9rem; background-color:var(--bg-card-subtle); border-radius:var(--radius-md);">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--primary); margin-bottom:0.3rem;">💡 추천 이유 (Why & Effect)</div>
+          <div style="font-size:0.92rem; color:var(--text-main); line-height:1.6;" id="sum-method-reason">-</div>
+        </div>
+
+        <div class="today-tasks-box">
+          <h4>🚀 오늘 바로 실천할 핵심 과제 (TOP 2~3)</h4>
+          <ul class="today-tasks-list" id="sum-today-tasks">
+            <!-- Dynamic tasks -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sections Toolbar -->
+      <div class="sections-toolbar">
+        <div style="font-size:0.95rem; font-weight:700; color:var(--text-main);">
+          📚 7가지 상세 분석 카드 (독립 탐색)
+        </div>
+        <div class="sections-toolbar-actions">
+          <button class="btn btn-secondary btn-sm" onclick="toggleAllSections(true)">모두 펼치기</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleAllSections(false)">모두 접기</button>
+          <button class="btn btn-mint btn-sm" onclick="summarizeSelectedSections()">✨ 선택 항목 요약하기</button>
+        </div>
+      </div>
+
+      <!-- 7 Detailed Sections Accordion Container -->
+      <div id="detailed-sections-container">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+
+      <!-- Encouragement Card -->
+      <div class="encouragement-card">
+        <div class="encouragement-avatar">🦉🍀</div>
+        <div>
+          <div style="font-size:0.82rem; font-weight:700; color:var(--primary); margin-bottom:0.25rem;">
+            STUDYMATE AI 코치의 따뜻한 응원
+          </div>
+          <div class="encouragement-text" id="encouragement-message">
+            "완벽하지 않아도 괜찮아요. 오늘의 작은 한 걸음이 목표 달성의 가장 확실한 밑거름이 됩니다. 힘내세요!"
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Action Buttons -->
+      <div style="margin-top: 2rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <button class="btn btn-primary btn-lg" style="flex:2;" onclick="savePlanToMyStudy()">
+          💾 이 계획을 '나의 학습 공간'에 저장하고 시작하기
+        </button>
+        <button class="btn btn-secondary btn-lg" style="flex:1;" onclick="navigateTo('diagnosis')">
+          ✏️ 진단 정보 수정
+        </button>
+        <button class="btn btn-outline btn-lg" style="flex:1;" onclick="reAnalyze()">
+          🔄 재분석
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. AI CHAT COACH VIEW -->
+    <section id="page-coach" class="page-view">
+      <div class="chat-container">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <div class="brand-icon" style="width:36px; height:36px; font-size:1.1rem;">🦉</div>
+            <div>
+              <div style="font-weight:700; font-size:1rem; display:flex; align-items:center; gap:0.4rem;">
+                StudyMate AI 코치 상담실
+                <span class="badge badge-mint" id="chat-mode-badge">⚡ 규칙 기반 맞춤 코칭 모드</span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--text-muted);" id="chat-context-desc">
+                현재 진단 정보와 추천 전략을 바탕으로 대화합니다.
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:0.4rem;">
+            <button class="btn btn-secondary btn-sm" onclick="clearChatHistory()" title="대화 내용 지우기">🗑️ 비우기</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyChatHistory()" title="대화 복사">📋 복사</button>
+          </div>
+        </div>
+
+        <!-- System Notice Banner in Chat -->
+        <div style="background-color:var(--bg-card-subtle); padding:0.5rem 1rem; border-bottom:1px solid var(--border-color); font-size:0.8rem; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+          <span id="chat-system-status">💡 현재 브라우저 내장 규칙 기반 맞춤 코칭 가이드가 작동 중입니다.</span>
+          <a href="javascript:openSettingsModal()" style="color:var(--primary); font-weight:600; text-decoration:none;">Gemini API 설정</a>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chat-messages-box">
+          <!-- Initial Welcome Message from AI -->
+          <div class="chat-bubble ai">
+            안녕하세요! 당신의 전담 AI 학습 코치입니다. 😊🍀<br>
+            추천해 드린 공부법이나 시간표에 대해 궁금한 점이 있으신가요? 혹은 특정 개념 설명이나 시간표 변경이 필요하시면 편하게 말씀해 주세요!
+            <div class="chat-bubble-time">방금 전</div>
+          </div>
+        </div>
+
+        <!-- Quick Question Chips -->
+        <div class="quick-chips-bar" id="quick-chips-bar">
+          <button class="chip btn-sm" onclick="sendQuickPrompt('추천해주신 공부법을 구체적으로 어떻게 실천해야 할지 첫 단계만 짚어줘!')">💡 공부법 실천 첫 단계 알려줘</button>
+          <button class="chip btn-sm" onclick="sendQuickPrompt('오늘 피곤한데 시간표를 조금 더 여유롭게 30분 줄여서 다시 짜줄 수 있어?')">⏱️ 시간표 30분 여유롭게 조정</button>
+          <button class="chip btn-sm" onclick="sendQuickPrompt('개념 암기가 너무 안 되는데, 효과적인 인출 팁 알려줘!')">🧠 개념 암기 & 인출 비법</button>
+          <button class="chip btn-sm" onclick="sendQuickPrompt('문제 풀 때 계산 실수를 줄이는 확실한 방법이 뭐야?')">📝 오답 및 실수 방지법</button>
+        </div>
+
+        <!-- Chat Input Form -->
+        <form class="chat-input-area" onsubmit="handleChatSubmit(event)">
+          <input type="text" id="chat-input-text" class="chat-input" placeholder="학습 고민이나 시간표 수정 요청을 입력하세요..." autocomplete="off">
+          <button type="submit" class="btn btn-primary" id="btn-send-chat" style="border-radius:var(--radius-full); padding:0.7rem 1.2rem;">
+            전송
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 5. MY STUDY VIEW -->
+    <section id="page-mystudy" class="page-view">
+      <!-- Progress Banner -->
+      <div class="progress-overview-card">
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+            <span class="badge badge-mint">오늘의 학습 진행률</span>
+            <span id="plan-date-badge" style="font-size:0.85rem; opacity:0.9;">2026. 11. 21.</span>
+          </div>
+          <h2 style="font-size:1.6rem; font-weight:800;" id="plan-subject-title">과목 학습 목표</h2>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="tasks-progress-fill"></div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:2.2rem; font-weight:800; line-height:1;" id="tasks-progress-percent">0%</div>
+          <div style="font-size:0.85rem; opacity:0.9;" id="tasks-progress-count">완료 0 / 0개 과제</div>
+        </div>
+      </div>
+
+      <!-- Tasks Checklist Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>✅</span> 오늘의 학습 계획 및 체크리스트
+          </div>
+          <div style="display:flex; gap:0.4rem;">
+            <button class="btn btn-secondary btn-sm" onclick="openAddTaskModal()">+ 과제 추가</button>
+            <button class="btn btn-secondary btn-sm" onclick="resetTodayTasks()">초기화</button>
+          </div>
+        </div>
+
+        <div id="tasks-checklist-container" class="tasks-checklist">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Schedule Timetable Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>⏱️</span> 오늘의 블록 시간표
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="navigateTo('coach')">💬 AI와 시간표 수정하기</button>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="timetable-table" id="mystudy-timetable">
+            <thead>
+              <tr>
+                <th style="width:25%;">시간대</th>
+                <th style="width:35%;">학습 활동 / 내용</th>
+                <th style="width:15%;">유형</th>
+                <th style="width:25%;">목적 및 실행 가이드</th>
+              </tr>
+            </thead>
+            <tbody id="mystudy-timetable-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reflection & Review Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📊</span> 오늘 학습 성과 점검 및 회고
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveReflectionRecord()">💾 회고 저장</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem; margin-bottom:1rem;">
+          <div class="form-group">
+            <label class="form-label">오늘의 개념 이해도 만족도 (1~5점)</label>
+            <select id="reflect-understanding" class="form-control">
+              <option value="5">⭐⭐⭐⭐⭐ 매우 잘 이해됨 (90% 이상)</option>
+              <option value="4" selected>⭐⭐⭐⭐ 대체로 이해됨 (70~89%)</option>
+              <option value="3">⭐⭐⭐ 보통 (50~69%)</option>
+              <option value="2">⭐⭐ 다소 어려움 (추가 복습 필요)</option>
+              <option value="1">⭐ 많이 부족함 (개념 재수강 필요)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">취약 단원 추가 복습 필요 여부</label>
+            <select id="reflect-need-review" class="form-control">
+              <option value="yes">내일 우선적으로 오답/개념 복습 필요</option>
+              <option value="no" selected>현재 진도에 맞춰 다음 단계로 진행</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">오늘 공부하면서 어려웠던 부분 및 메모</label>
+          <textarea id="reflect-memo" class="form-control" rows="2" placeholder="예: 미분 파트 문제에서 조건식 해석이 헷갈렸음. 내일 아침 10분에 공식 복습하기."></textarea>
+        </div>
+
+        <div id="reflection-next-guide" style="padding:0.9rem; background-color:var(--bg-card-subtle); border-radius:var(--radius-md); font-size:0.9rem; color:var(--text-main); display:none;">
+          <!-- Next study guide recommendation -->
+        </div>
+      </div>
+
+      <!-- History Log Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📁</span> 저장된 이전 학습 기록 히스토리
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="clearAllHistory()">전체 기록 삭제</button>
+        </div>
+        <div id="history-list-container" style="font-size:0.9rem;">
+          <!-- History items -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MOBILE BOTTOM NAVIGATION
+       ========================================================================== -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-container">
+      <button class="mobile-nav-btn active" data-page="home" onclick="navigateTo('home')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>홈</span>
+      </button>
+      <button class="mobile-nav-btn" data-page="diagnosis" onclick="navigateTo('diagnosis')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <span>학습진단</span>
+      </button>
+      <button class="mobile-nav-btn" data-page="report" onclick="navigateTo('report')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        <span>분석결과</span>
+      </button>
+      <button class="mobile-nav-btn" data-page="coach" onclick="navigateTo('coach')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+        <span>AI상담</span>
+      </button>
+      <button class="mobile-nav-btn" data-page="mystudy" onclick="navigateTo('mystudy')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+        <span>내학습</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       APP FOOTER
+       ========================================================================== -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-sdg">
+        <span>🌱 UN SDG 4 — 양질의 교육(Quality Education) 지원 서비스</span>
+      </div>
+      <div>StudyMate AI — 언제 어디서나 편안한 나만의 AI 전담 학습 코치</div>
+      <div style="font-size:0.75rem;">
+        본 서비스의 학습 데이터는 사용자의 브라우저(Local Storage)에만 보존되며 외부 서버로 전송되지 않습니다.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODALS & OVERLAYS
+       ========================================================================== -->
+
+  <!-- 1. Settings Modal -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ 서비스 설정 & 환경 구성</div>
+        <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Font Size Setting -->
+        <div class="form-group">
+          <label class="form-label">글자 크기 조절</label>
+          <div class="chip-group" id="chip-font-size">
+            <div class="chip selected" data-value="medium" onclick="setFontSize('medium')">보통 (16px)</div>
+            <div class="chip" data-value="large" onclick="setFontSize('large')">크게 (18px)</div>
+            <div class="chip" data-value="xlarge" onclick="setFontSize('xlarge')">아주 크게 (20px)</div>
+          </div>
+        </div>
+
+        <!-- AI Style Setting -->
+        <div class="form-group">
+          <label class="form-label">AI 코치 응답 스타일 선택</label>
+          <div class="chip-group" id="chip-ai-style">
+            <div class="chip" data-value="friendly" onclick="setAiStyle('friendly')">🥰 귀엽고 친근한 스타일</div>
+            <div class="chip selected" data-value="balanced" onclick="setAiStyle('balanced')">😊 자연스럽고 균형 잡힌 스타일</div>
+            <div class="chip" data-value="professional" onclick="setAiStyle('professional')">📘 깔끔하고 전문적인 스타일</div>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
+            * 스타일은 어조에만 영향을 주며, 분석의 객관성과 추천 근거의 엄밀함은 동일하게 유지됩니다.
+          </div>
+        </div>
+
+        <!-- Gemini API Key Setting (BYOK) -->
+        <div class="form-group">
+          <label class="form-label">
+            Google Gemini API 키 (선택 사항)
+            <span class="sub-text">(생략 시 고도화된 규칙 기반 엔진으로 실행)</span>
+          </label>
+          <input type="password" id="input-api-key" class="form-control" placeholder="AI Studio에서 발급받은 API 키 입력 (선택)">
+          <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.35rem;">
+            * API 키가 없어도 완벽히 작동하는 브라우저 맞춤형 규칙 기반 코칭 시스템이 제공됩니다.<br>
+            * 입력된 API 키는 절대 외부로 노출되지 않으며, 사용자의 브라우저에서 Google API로 직접 전송됩니다.
+          </div>
+        </div>
+
+        <!-- Data Reset Section -->
+        <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border-color);">
+          <label class="form-label" style="color:var(--danger);">데이터 관리 및 초기화</label>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            로컬 브라우저에 저장된 진단 결과, 체크리스트, 이전 상담 기록을 모두 초기화합니다.
+          </p>
+          <button class="btn btn-outline btn-sm" style="color:var(--danger); border-color:var(--danger);" onclick="resetAllData()">
+            🗑️ 모든 사용자 데이터 초기화
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveSettings()">설정 저장 및 닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Selected Sections Summary Modal -->
+  <div class="modal-backdrop" id="modal-summary">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">✨ 선택 항목 종합 요약</div>
+        <button class="modal-close" onclick="closeSummaryModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-summary-content">
+        <!-- Rendered summary content -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="copySelectedSummaryText()">📋 요약 내용 복사</button>
+        <button class="btn btn-primary" onclick="closeSummaryModal()">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Add Custom Task Modal -->
+  <div class="modal-backdrop" id="modal-add-task">
+    <div class="modal-dialog" style="max-width:440px;">
+      <div class="modal-header">
+        <div class="modal-title">➕ 새로운 과제 추가</div>
+        <button class="modal-close" onclick="closeAddTaskModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">과제명 <span class="req-badge">필수</span></label>
+          <input type="text" id="input-new-task-title" class="form-control" placeholder="예: 영어 단어 50개 암기, 수학 10문제 풀이">
+        </div>
+        <div class="form-group">
+          <label class="form-label">예상 소요 시간</label>
+          <select id="input-new-task-duration" class="form-control">
+            <option value="25분">25분 (1 포모도로)</option>
+            <option value="40분">40분</option>
+            <option value="50분" selected>50분 (집중 블록)</option>
+            <option value="60분">60분 (1시간)</option>
+            <option value="90분">90분</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">우선순위</label>
+          <select id="input-new-task-priority" class="form-control">
+            <option value="최우선" selected>🔴 최우선 (중요/취약)</option>
+            <option value="보통">🟡 보통 (정규 학습)</option>
+            <option value="복습">🟢 복습/정리</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeAddTaskModal()">취소</button>
+        <button class="btn btn-primary" onclick="confirmAddTask()">추가하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-step-text" id="loading-step-label">학습 정보를 확인하고 있어요 📚</div>
+    <div style="font-size:0.9rem; color:rgba(255,255,255,0.85);">잠시만 기다려주세요...</div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ==========================================================================
+       APPLICATION LOGIC & SCRIPTS
+       ========================================================================== -->
+  <script src="app.js"></script>
+</body>
+</html>
